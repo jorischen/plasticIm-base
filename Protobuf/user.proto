@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option php_class_prefix = "Pb";
+
+message User {
+
+	string nickname = 1;
+
+	string uid = 2;
+
+	string avatar = 3;
+}
+
+
+
+
+

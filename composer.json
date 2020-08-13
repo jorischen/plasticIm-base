@@ -1,0 +1,16 @@
+{
+	
+    "autoload": {
+        "psr-4": {
+	        "Sys\\": "Sys/",
+            "App\\": "App/",
+            "": "Protobuf/Dist" 
+	    }
+
+    },
+
+    "require": {
+        "google/protobuf": "^3.12"
+    }
+
+}
