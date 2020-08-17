@@ -92,3 +92,25 @@ Array
     [id] => 5f34b02b08106
 )
 ```
+
+
+##### Database usage
+
+###### mysql (extension PDO, PDO_ mysql required)
+
+document https://www.php.net/manual/zh/book.pdo.php
+```
+$mysql = app(\Sys\Library\Database\Mysql::class);
+$tables = $mysql->query('show tables;');
+print_r($tables);
+```
+
+
+###### redis (extension redis required)
+
+document https://github.com/phpredis/phpredis
+```
+$redis = app(\Sys\Library\Database\Redis::class);
+$redis->set('test', 666);
+print_r($redis->get('test'));
+```

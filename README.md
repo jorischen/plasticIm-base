@@ -92,3 +92,26 @@ Array
     [id] => 5f34b02b08106
 )
 ```
+
+
+
+##### 数据库使用
+
+###### mysql (需要安装扩展 PDO、pdo_mysql)
+
+使用文档 https://www.php.net/manual/zh/book.pdo.php
+```
+$mysql = app(\Sys\Library\Database\Mysql::class);
+$tables = $mysql->query('show tables;');
+print_r($tables);
+```
+
+
+###### redis (需要安装扩展 redis)
+
+使用文档 https://github.com/phpredis/phpredis
+```
+$redis = app(\Sys\Library\Database\Redis::class);
+$redis->set('test', 666);
+print_r($redis->get('test'));
+```
