@@ -7,6 +7,7 @@
 + Support TCP, websocket, HTTP services; switch easily through configuration without modifying code
 + Built in communication data format: Protocol buffers, JSON; easy switching through configuration, without code modification
 + Support the extension of any communication format
++ Support redis and MySQL connection pool
 + IOC container supporting adaptive corouting and non coprocessing States, dependency injection
 
 The basic directory structure and usage of the framework are the same as the traditional mainstream framework based on php-fpm, easy to use and zero learning cost
