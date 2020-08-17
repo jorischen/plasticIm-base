@@ -1,7 +1,7 @@
 <?php
 namespace Sys\Event\Server;
 
-use Sys\Constraint\EventInterface;
+use Sys\Constraint\Event\EventInterface;
 use Sys\Constraint\Object\Request;
 use Sys\Constraint\Object\Response;
 
@@ -16,10 +16,9 @@ class MessageEvent implements EventInterface {
 
 		$fd = $frame->fd;
 		$data = $frame->data;
-
-		//bind response
 		$parser = $this->getParser();
 		$response = new Response;
+
 		$response->bindSender(function ($data) use ($server, $fd, $parser) {
 			$server->push($fd, $parser->encode($data));
 		});

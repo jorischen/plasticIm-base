@@ -1,6 +1,7 @@
 <?php
 namespace Sys;
 
+use Sys\Constraint\Register\ExceptionRegister;
 use Sys\Utils\Config;
 
 class Server {
@@ -8,6 +9,8 @@ class Server {
 	protected static $processName;
 
 	protected static $server;
+
+	protected static $workerNum;
 
 	protected static $event = [
 		'WorkerStart' => '\Sys\Event\Server\WorkerStartEvent',
@@ -98,6 +101,10 @@ class Server {
 		$serverConfig['enable_coroutine'] = false;
 
 		static::$server->set($serverConfig);
+
+		static::$workerNum = $serverConfig['worker_num'] ?? swoole_cpu_num();
+
+		\Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 	}
 
 	/**
@@ -108,7 +115,12 @@ class Server {
 			if (in_array($event, static::$enableCoroutineEvent)) {
 				$callback = function (...$args) use ($callback) {
 					go(function () use ($args, $callback) {
-						call_user_func_array([new $callback, 'handle'], $args);
+						// set_exception_handler is not supported. You must use try / catch to handle exceptions
+						try {
+							call_user_func_array([new $callback, 'handle'], $args);
+						} catch (\Exception $e) {
+							ExceptionRegister::exceptionHandler($e);
+						}
 					});
 				};
 			} else {
@@ -123,6 +135,13 @@ class Server {
 	 */
 	public static function getServer() {
 		return static::$server;
+	}
+
+	/**
+	 * Get worker Num
+	 */
+	public static function getWorkerNum() {
+		return static::$workerNum;
 	}
 
 }

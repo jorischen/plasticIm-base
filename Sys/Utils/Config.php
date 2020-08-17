@@ -1,11 +1,12 @@
 <?php
 namespace Sys\Utils;
 
+use \Sys\Constraint\Traits\CallWithStaticTrait;
 use \Sys\Constraint\Traits\SingletonTrait;
 
 class Config {
 
-	use SingletonTrait;
+	use SingletonTrait, CallWithStaticTrait;
 
 	const DEFAULT_CONFG_PATH = APP_PATH . '/Sys/Config';
 
@@ -34,4 +35,5 @@ class Config {
 		static::$cache[$keyHash] = $config;
 		return $config;
 	}
+
 }

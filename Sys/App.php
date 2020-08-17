@@ -1,8 +1,10 @@
 <?php
 namespace Sys;
 
-use \Sys\Constraint\Register\ExceptionRegister;
-use \Sys\Utils\Config;
+use Sys\Constraint\Register\ExceptionRegister;
+use Sys\Library\Pools\PDOPool;
+use Sys\Library\Pools\RedisPool;
+use Sys\Utils\Config;
 
 class App {
 
@@ -71,6 +73,7 @@ class App {
 		}
 
 		$bootstrap = Config::get('bootstrap');
+
 		if (!empty($bootstrap['container']['register'])) {
 			foreach ($bootstrap['container']['register'] as $k => $v) {
 				if (is_string($v)) {
@@ -80,6 +83,27 @@ class App {
 						app()->bindSingleton($k, $v['bind']);
 					}
 				}
+			}
+		}
+
+		if (!empty($bootstrap['container']['singleton_trait'])) {
+			app()->setSingletonTrait(
+				$bootstrap['container']['singleton_trait']['trait'],
+				$bootstrap['container']['singleton_trait']['get_instance_method'],
+			);
+		}
+
+		//pool
+		$database = Config::get('database');
+		if ($database) {
+			if (!empty($database['redis'])) {
+				app()->bind(RedisPool::class, RedisPool::class);
+				app(RedisPool::class)->setConfig($database['redis']);
+			}
+
+			if (!empty($database['database'])) {
+				app()->bind(PDOPool::class, PDOPool::class);
+				app(PDOPool::class)->setConfig($database['database']);
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 namespace Sys\Event\Server;
 
 use Sys\App;
-use Sys\Constraint\EventInterface;
+use Sys\Constraint\Event\EventInterface;
 use Sys\Utils\Config;
 
 class WorkerStartEvent implements EventInterface {

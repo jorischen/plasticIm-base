@@ -1,10 +1,9 @@
 <?php
 namespace Sys\Event\Server;
 
-use Sys\Constraint\EventInterface;
+use Sys\Constraint\Event\EventInterface;
 use Sys\Constraint\Object\Request;
 use Sys\Constraint\Object\Response;
-use Sys\Constraint\Register\ExceptionRegister;
 
 /**
  * HTTP SERVER Receive Event
@@ -24,14 +23,7 @@ class RequestEvent implements EventInterface {
 		app()->bind('response', $response);
 
 		//resolve request
-		try {
-			$this->resolve($httpRequest);
-		} catch (\Swoole\ExitException $e) {
-			$exitData = $e->getStatus();
-			$response->send(is_string($exitData) ? $exitData : json_encode($exitData));
-		} catch (\Throwable $e) {
-			app(ExceptionRegister::class)->exceptionHandler($e, $response);
-		}
+		$this->resolve($httpRequest);
 
 	}
 

@@ -14,6 +14,8 @@ class Container {
 
 	protected $dependencies = [];
 
+	protected $singletonTrait;
+
 	/**
 	 * Bind to container
 	 * @param  string       $name
@@ -57,9 +59,9 @@ class Container {
 			throw new BindException("Singleton bind Error, This class '{$class}' does not exist");
 		}
 
-		$this->bind($name, function () use ($class, $getInstanceMethod) {
+		$this->bind($name, function (array $args = []) use ($class, $getInstanceMethod) {
 			if ($getInstanceMethod) {
-				return call_user_func([$class, $getInstanceMethod]);
+				return call_user_func_array([$class, $getInstanceMethod], $args);
 			}
 
 			return $this->make($class);
@@ -104,9 +106,26 @@ class Container {
 			$abstract = $this->bindings[$name]['bind'];
 		}
 
+		//Class instantiation
 		if (is_string($abstract) && class_exists($abstract)) {
 
 			$reflectionClass = new \ReflectionClass($abstract);
+
+			//If it use a singleton trait, auto bind to singleton mode
+			if (isset($this->singletonTrait)) {
+
+				$traits = $reflectionClass->getTraitNames();
+
+				if ($traits && in_array($this->singletonTrait['trait'], $traits)) {
+					$this->bindSingleton(
+						$name,
+						$abstract,
+						$this->singletonTrait['get_instance_method'],
+						true
+					);
+					return $this->make($name, $params);
+				}
+			}
 
 			$constructor = $reflectionClass->getConstructor();
 			$isInstantiable = $reflectionClass->isInstantiable();
@@ -267,12 +286,18 @@ class Container {
 			return $this->bindings[$name]['instance'];
 		};
 
-		$instance = $this->make($name);
-		if (!isset($this->bindings[$name]['instance'])) {
-			$instance = $this->make($replace);
-			$this->bindInstance($name, $instance, true);
+		try {
+			$instance = $this->make($name);
+			if (!is_object($instance)) {
+				$instance = null;
+			}
+		} catch (MakeException $e) {
 		}
 
+		if (!isset($instance)) {
+			$instance = $this->make($replace);
+		}
+		$this->bindInstance($name, $instance, true);
 		return $instance;
 	}
 
@@ -282,6 +307,7 @@ class Container {
 	 */
 	public function unbind(string $name) {
 		unset($this->bindings[$name]);
+		return $this;
 	}
 
 	/**
@@ -290,6 +316,19 @@ class Container {
 	 */
 	public function isBound(string $name) {
 		return array_key_exists($name, $this->bindings);
+	}
+
+	/**
+	 * Set Singleton Trait
+	 * @param  string $traitName
+	 * @param  string $getInstanceMethod
+	 */
+	public function setSingletonTrait(string $traitName, string $getInstanceMethod) {
+		$this->singletonTrait = [
+			'trait' => $traitName,
+			'get_instance_method' => $getInstanceMethod,
+		];
+		return $this;
 	}
 
 	/**

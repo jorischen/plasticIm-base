@@ -1,7 +1,7 @@
 <?php
 namespace Sys\Event\Server;
 
-use Sys\Constraint\EventInterface;
+use Sys\Constraint\Event\EventInterface;
 use Sys\Utils\Config;
 
 class ManagerStartEvent implements EventInterface {

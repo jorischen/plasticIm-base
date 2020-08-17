@@ -3,10 +3,11 @@ namespace Sys\Utils;
 
 use Sys\Constraint\Traits\SingletonTrait;
 use Sys\Exceptions\Route\NotFoundException;
+use \Sys\Constraint\Traits\CallWithStaticTrait;
 
 class Router {
 
-	use SingletonTrait;
+	use SingletonTrait, CallWithStaticTrait;
 
 	/**
 	 * Automatic routing
@@ -177,4 +178,5 @@ class Router {
 		return ['class' => $className, 'method' => $method, 'middleware' => $middleware];
 
 	}
+
 }

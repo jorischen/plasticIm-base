@@ -7,14 +7,14 @@ class Logger {
 
 	use SingletonTrait;
 
-	protected static $levels = [
+	protected $levels = [
 		'info',
 		'notice',
 		'warn',
 		'error',
 	];
 
-	public static function write($msg, $type, $fileName = '') {
+	public function write($msg, $type, $fileName = '') {
 
 		$outputMsg = sprintf("%s[%s] %s\n", $fileName, date('H:i:s'), $msg);
 
@@ -26,10 +26,10 @@ class Logger {
 		file_put_contents($file, $outputMsg, FILE_APPEND);
 	}
 
-	public static function __callStatic($method, $args) {
-		if (in_array($method, static::$levels)) {
+	public function __call($method, $args) {
+		if (in_array($method, $this->levels)) {
 			if ($args) {
-				static::write($args[0], $method, ($args[1] ?? ''));
+				$this->write($args[0], $method, ($args[1] ?? ''));
 			}
 			return;
 		}
